@@ -15,7 +15,7 @@ app.get('/book/:id', bookController.getBook);
 app.post('/book', bookController.upsertBook);
 app.delete('/book/:id', bookController.deleteBook);
 
-//listRoutes.listAllRoutes(app._router.stack);
+listRoutes.listAllRoutes(app._router.stack);
 
 const port = 8080;
 app.listen(port, () => {

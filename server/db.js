@@ -8,8 +8,7 @@ const dbOptions = {
     min: 0,
     acquire: 30000,
     idle: 10000,
-  },
-  operatorsAliases: false,
+  }
 };
 
 const sequelize = new Sequelize(
