@@ -1,6 +1,5 @@
 function listAllRoutes(routerStack) {
   const routes = [];
-  console.log("-------> routerStack : ", JSON.stringify(routerStack));
   if (routerStack.length > 4) {
       for (const [index, value] of routerStack.entries()) {
           if (index < 4) {
