@@ -1,10 +1,12 @@
 const express        = require('express');
 const app            = express();
 const bodyParser = require('body-parser');
+const cors       = require('cors'); 
 const listRoutes = require('./controllers/listRoutes');
 const bookController = require('./controllers/Books');
 
 app.use(bodyParser.json()); // for parsing application/json
+app.use(cors());
 
 app.get('/', function(req, res) {
     res.send('Hi, Response !');
