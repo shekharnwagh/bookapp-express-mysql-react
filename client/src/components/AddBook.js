@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter, NavLink } from 'react-router-dom';
-
-import BookApi from '../data/BookApi';
+import axios from 'axios';
 
 class AddBook extends Component {
   constructor(props) {
@@ -9,11 +8,12 @@ class AddBook extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onSubmit(event) {
+  async onSubmit(event) {
     event.preventDefault();
     var book = {};
     book.name = this.refs.name.value;
     book.author = this.refs.author.value;
+    book.genre = this.refs.genre.value;
     book.price = parseInt(this.refs.price.value);
     if (!book.name.length) {
       alert("Please enter a name !");
@@ -28,7 +28,13 @@ class AddBook extends Component {
       alert("Please enter a number for price");
     }
     else {
-      BookApi.saveBook(book);
+      try {
+        const res = await axios.post(process.env.REACT_APP_BOOK_API, book);
+        console.log('POST response : ', res.data.upsertStatus);
+      }
+      catch(err) {
+        console.log("ERR : ", err.stack);
+      }
       this.props.history.push('/');
     }
   }
@@ -62,6 +68,20 @@ class AddBook extends Component {
             id="author"
             type="text"
             ref="author"
+            className="form-control"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="genre">
+            Genre:
+            <span style={{ color: "red" }}>
+              *
+            </span>
+          </label>
+          <input
+            id="genre"
+            type="text"
+            ref="genre"
             className="form-control"
           />
         </div>

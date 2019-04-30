@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import BookApi from '../data/BookApi';
+import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 
 class AllBooks extends Component {
@@ -7,21 +7,41 @@ class AllBooks extends Component {
     super(props);
     this.rowDelete = this.rowDelete.bind(this);
     this.state = {
-      books: []
+      books: [],
     };
   }
 
   componentDidMount() {
-    this.setState({ books: BookApi.getAllBooks() });
+    this.fetchAllBooks();
   }
 
-  rowDelete = (id) => {
-    for (let i = 0; i < this.state.books.length; i++) {
-      if (this.state.books[i].id === id) {
-        this.state.books.splice(i, 1);
-        this.setState({ books: BookApi.getAllBooks() });
+  fetchAllBooks = async () => {
+    try {
+      const res = await axios.get(process.env.REACT_APP_ALL_BOOKS_API);
+      if (res.data.count) {
+        this.setState({
+          books: res.data.rows
+        })
       }
     }
+    catch (err) {
+      console.log("ERR : ", err.stack);
+    }
+  }
+
+  rowDelete = async (id) => {
+    try {
+      const res = await axios.delete(
+        `${process.env.REACT_APP_BOOK_API}/${id}`
+        );
+      console.log("DELETE response : ", res.data.message);
+    }
+    catch(err) {
+      console.log("ERR : ", err.stack);
+    }
+
+    this.fetchAllBooks();
+
   }
 
   render() {
@@ -29,6 +49,7 @@ class AllBooks extends Component {
       <tr key={book.id}>
         <td>{book.name}</td>
         <td>{book.author}</td>
+        <td>{book.genre}</td>
         <td>{book.price}</td>
         <td>
           <div className="row">
@@ -57,6 +78,7 @@ class AllBooks extends Component {
             <tr>
               <th>Name</th>
               <th>Author</th>
+              <th>Genre</th>
               <th>Price</th>
               <th></th>
             </tr>

@@ -1,49 +1,49 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import { NavLink } from 'react-router-dom';
-import BookApi from '../data/BookApi';
-
 
 class EditBook extends Component {
 
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
-    this.handleName = this.handleName.bind(this);
     this.state = {
       author: '',
       name: '',
+      genre: '',
       price: 0,
-      id: 0
+      id: 0,
     }
   }
 
-  componentDidMount() {
-    this.setState({ name: BookApi.getBook(this.props.match.params.id).name });
-    this.setState({ author: BookApi.getBook(this.props.match.params.id).author });
-    this.setState({ price: BookApi.getBook(this.props.match.params.id).price });
-    this.setState({ id: BookApi.getBook(this.props.match.params.id).id });
+  async componentDidMount() {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_BOOK_API}/${this.props.match.params.id}`
+        );
+      if (res.data) {
+        const book = res.data;
+        this.setState({
+          id: book.id,
+          name: book.name,
+          author: book.author,
+          genre: book.genre,
+          price: book.price
+        });
+      }
+    }
+    catch(err) {
+      console.log("ERR : ", err.stack);
+    }
   }
 
-  handleName(event) {
-    this.setState({ name: event.target.value });
-  }
-
-  handleAuthor(event) {
-    console.log(event.target.value);
-    this.setState({ author: event.target.value });
-  }
-
-  handlePrice(event) {
-    console.log(event.target.value);
-    this.setState({ price: event.target.value });
-  }
-
-  onSubmit(event) {
+  async onSubmit(event) {
     event.preventDefault();
     var book = {};
     book["id"] = this.state.id;
     book["name"] = this.state.name;
     book["author"] = this.state.author;
+    book["genre"] = this.state.genre;
     book["price"] = this.state.price;
     if (!book.name.length) {
       alert("Please enter a name !");
@@ -58,7 +58,13 @@ class EditBook extends Component {
       alert("Please enter a number for price");
     }
     else {
-      BookApi.editBook(this.state.id, book);
+      try {
+        const res = await axios.post(process.env.REACT_APP_BOOK_API, book);
+        console.log('POST response : ', res.data.upsertStatus);
+      }
+      catch(err) {
+        console.log("ERR : ", err.stack);
+      }
       this.props.history.push('/');
     }
   }
@@ -97,6 +103,22 @@ class EditBook extends Component {
             ref="author"
             value={this.state.author}
             onChange={(e) => this.setState({ author: e.target.value })}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="genre">
+            Genre:
+          <span style={{ color: "red" }}>
+              *
+          </span>
+          </label>
+          <input
+            id="genre"
+            className="form-control"
+            type="text"
+            ref="genre"
+            value={this.state.genre}
+            onChange={(e) => this.setState({ genre: e.target.value })}
           />
         </div>
         <div className="form-group">
